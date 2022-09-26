@@ -1,14 +1,29 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+use std::error::Error;
+use std::fs;
+
+pub struct Config {
+    pub query: String,
+    pub file_path: String,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+impl Config {
+    pub fn build(args: &[String]) -> Result<Config, &'static str> {
+        if args.len() < 3 {
+            return Err("not enough arguments");
+        }
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+        let query = args[1].clone();
+        let file_path = args[2].clone();
+
+        Ok(Config { query, file_path })
     }
 }
+
+pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    let contents = fs::read_to_string(config.file_path)?;
+
+    println!("With text:\n{contents}");
+
+    Ok(())
+}
+
